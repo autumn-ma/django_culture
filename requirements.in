@@ -1,0 +1,11 @@
+django
+djangorestframework
+django-filter
+drf-spectacular
+djangorestframework-simplejwt
+pillow
+gunicorn
+django-cors-headers
+pytest-django
+whitenoise
+djoser
