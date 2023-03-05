@@ -3,6 +3,13 @@ import os
 from pathlib import Path
 import logging.config
 
+
+# Monkey patching till PR gets merged https://github.com/sunscrapers/djoser/issues/668
+import django
+from django.utils.encoding import force_str
+
+django.utils.encoding.force_text = force_str
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -23,6 +30,7 @@ THIRD_PARTY_APPS = [
     "django_filters",
     "drf_spectacular",
     "djoser",
+    "social_django",
 ]
 
 LOCAL_APPS = [
@@ -43,8 +51,11 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE = [
+    "social_django.middleware.SocialAuthExceptionMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -66,6 +77,8 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "social_django.context_processors.backends",
+                "social_django.context_processors.login_redirect",
             ],
         },
     },
@@ -125,6 +138,22 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # ---------------------------------Auth User-------------------------------------------------#
 AUTH_USER_MODEL = "users.User"
+
+# ----------------------------------AUTHENTICATION BACKENDS----------------------------------#
+AUTHENTICATION_BACKENDS = (
+    "social_core.backends.github.GithubOAuth2",
+    "django.contrib.auth.backends.ModelBackend",
+)
+
+# ----------------------------------GITHUB SOCIAL AUTH----------------------------------#
+SOCIAL_AUTH_GITHUB_KEY = "d0865f225878215d02b1"
+SOCIAL_AUTH_GITHUB_SECRET = "6a08e1ba9510615794133e7efd5dc4ef2ecd9513"
+
+# ----------------------------------GITHUB SCOPE----------------------------------#
+SOCIAL_AUTH_GITHUB_SCOPE = [
+    "public_profile",
+    "user:email",
+]
 
 # ----------------------------------REST FRAMEWORK SETTINGS----------------------------------#
 
@@ -228,7 +257,7 @@ LOGGING = {
         },
     },
 }
-logging.config.dictConfig(LOGGING)
+# logging.config.dictConfig(LOGGING)
 
 # ----------------------------------------------EMAIL SETTINGS------------------------------------------------------
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
@@ -251,3 +280,19 @@ DJOSER = {
         "user_create": "users.serializers.CustomUserSerializer",
     },
 }
+
+
+# ------------------------------SOCIAL AUTH CONFIG---------------------------------------------#
+AUTHENTICATION_BACKENDS = [
+    "social_core.backends.github.GithubOAuth2",
+]
+
+SOCIAL_AUTH_GITHUB_KEY = "d0865f225878215d02b1"
+SOCIAL_AUTH_GITHUB_SECRET = "cebdc89c5dbd7a4bd351785d90ba1a221c401ea9"
+
+
+# -------------------------------CORS CONFIG------------------------------------------------#
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_ALLOW_ALL = True
+ALLOWED_HOSTS = ["*"]

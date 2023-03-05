@@ -9,3 +9,4 @@ django-cors-headers
 pytest-django
 whitenoise
 djoser
+social-auth-app-django
