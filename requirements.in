@@ -9,3 +9,4 @@ django-cors-headers
 pytest-django
 whitenoise
 djoser
+psycopg2-binary

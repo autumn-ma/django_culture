@@ -34,7 +34,7 @@ auth_urls = [
 ]
 
 api_v1_urls = [
-]   
+]
 
 urlpatterns = [
     path("admin/", admin.site.urls),

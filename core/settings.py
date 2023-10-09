@@ -2,15 +2,13 @@ from datetime import timedelta
 import os
 from pathlib import Path
 import logging.config
+import urllib.parse
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-q-222jl54e)8c$5mdij2061g5p(sbfst%@o$h@@l&b+321!(5^"
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
+DEBUG = bool(os.environ.get("DEBUG", default=0))
 
 ROOT_URLCONF = "core.urls"
 WSGI_APPLICATION = "core.wsgi.application"
@@ -37,9 +35,7 @@ INSTALLED_APPS = (
         "django.contrib.sessions",
         "django.contrib.messages",
         "django.contrib.staticfiles",
-    ]
-    + THIRD_PARTY_APPS
-    + LOCAL_APPS
+    ] + THIRD_PARTY_APPS + LOCAL_APPS
 )
 
 MIDDLEWARE = [
@@ -80,8 +76,12 @@ TEMPLATES = [
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
+        "NAME": os.environ.get("SQL_DATABASE", BASE_DIR / "db.sqlite3"),
+        "USER": os.environ.get("SQL_USER", "user"),
+        "PASSWORD": os.environ.get("SQL_PASSWORD", "password"),
+        "HOST": os.environ.get("SQL_HOST", "localhost"),
+        "PORT": os.environ.get("SQL_PORT", "5432"),
     }
 }
 
@@ -236,8 +236,6 @@ REDIS_DB = 0
 REDIS_PASSWORD = "redis-password"
 
 # ---------------------------------------------CELERY SETTINGS------------------------------------------------------
-import urllib.parse
-
 encoded_password = urllib.parse.quote_plus(REDIS_PASSWORD)
 CELERY_BROKER_URL = f"redis://:{encoded_password}@{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
 CELERY_RESULT_BACKEND = (
@@ -268,4 +266,4 @@ DJOSER = {
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ") or ["*"]
