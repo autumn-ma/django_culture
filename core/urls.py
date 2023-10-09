@@ -13,6 +13,8 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
 )
 
+from users import views
+
 documentaiton_apis = [
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
@@ -31,6 +33,11 @@ auth_urls = [
     path("", include(djoser_urls)),
     path("", include("djoser.urls.jwt")),
     path("", include("djoser.urls.authtoken")),
+    path('csrf/', views.get_csrf, name='api-csrf'),
+    path('login/', views.login_view, name='api-login'),
+    path('logout/', views.logout_view, name='api-logout'),
+    path('session/', views.session_view, name='api-session'),
+    path('whoami/', views.whoami_view, name='api-whoami'),
 ]
 
 api_v1_urls = [
