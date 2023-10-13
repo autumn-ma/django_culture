@@ -9,11 +9,11 @@ from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 
 
-
 def get_csrf(request):
     response = JsonResponse({'detail': 'CSRF cookie set'})
     response['X-CSRFToken'] = get_token(request)
     return response
+
 
 @csrf_exempt
 def login_view(request):
@@ -31,6 +31,7 @@ def login_view(request):
 
     login(request, user)
     return JsonResponse({'detail': 'Successfully logged in.'})
+
 
 @csrf_exempt
 def logout_view(request):
