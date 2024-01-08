@@ -3,7 +3,6 @@ from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
 
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from djoser import urls as djoser_urls
 
@@ -33,15 +32,12 @@ auth_urls = [
     path("", include("djoser.urls.authtoken")),
 ]
 
-api_v1_urls = [
-]
+api_v1_urls = []
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include(documentaiton_apis)),
     path("auth/", include(auth_urls)),
-
-    path("api/v1/", include(api_v1_urls)),
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

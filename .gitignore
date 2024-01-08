@@ -3,3 +3,5 @@
 venv/
 debug.log
 *.sqlite3
+debug.log
+debug.log.*

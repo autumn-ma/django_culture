@@ -2,3 +2,4 @@ black
 pip-tools
 pytest-django
 isort
+ruff

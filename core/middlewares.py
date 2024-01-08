@@ -1,5 +1,3 @@
-import datetime
-from django.middleware.gzip import GZipMiddleware
 import logging
 import uuid
 

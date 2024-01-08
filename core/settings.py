@@ -35,7 +35,9 @@ INSTALLED_APPS = (
         "django.contrib.sessions",
         "django.contrib.messages",
         "django.contrib.staticfiles",
-    ] + THIRD_PARTY_APPS + LOCAL_APPS
+    ]
+    + THIRD_PARTY_APPS
+    + LOCAL_APPS
 )
 
 MIDDLEWARE = [
@@ -132,9 +134,7 @@ AUTH_USER_MODEL = "users.User"
 # ----------------------------------REST FRAMEWORK SETTINGS----------------------------------#
 
 REST_FRAMEWORK = {
-    "DEFAULT_PERMISSION_CLASSES": (
-        "rest_framework.permissions.IsAuthenticated",
-    ),
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
@@ -143,7 +143,6 @@ REST_FRAMEWORK = {
         "rest_framework.filters.SearchFilter",
         "rest_framework.filters.OrderingFilter",
     ),
-    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 10,
@@ -191,27 +190,40 @@ LOGGING_CONFIG = None  # This empties out Django's logging config
 
 LOGGING = {
     "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "timed_file": {
-            "level": "DEBUG",
-            "class": "logging.handlers.TimedRotatingFileHandler",
-            "filename": "debug.log",
-            "when": "midnight",  # Rotate log files at midnight
-            "interval": 1,  # Rotate log files every day
-            "backupCount": 7,  # Keep up to 7 backup log files
-            "formatter": "verbose",
+    "disable_existing_loggers": True,
+    "formatters": {
+        "simple": {
+            "format": "%(levelname)s %(message)s",
+            "datefmt": "%y %b %d, %H:%M:%S",
         },
     },
-    "formatters": {
-        "verbose": {
-            "format": "%(asctime)s [%(levelname)s] %(message)s",
-            "datefmt": "%Y-%m-%d %H:%M:%S",
+    "handlers": {
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+        "celery": {
+            "level": "DEBUG",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": "celery.log",
+            "formatter": "simple",
+            "maxBytes": 1024 * 1024 * 100,  # 100 mb
+        },
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": "debug.log",
+            "maxBytes": 1024 * 1024 * 100,  # 100 mb
         },
     },
     "loggers": {
-        "info_logger": {
-            "handlers": ["timed_file"],
+        "celery": {
+            "handlers": ["celery", "console"],
+            "level": "DEBUG",
+        },
+        "django": {
+            "handlers": ["file", "console"],
             "level": "INFO",
             "propagate": True,
         },
