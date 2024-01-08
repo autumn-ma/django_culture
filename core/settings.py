@@ -35,9 +35,7 @@ INSTALLED_APPS = (
         "django.contrib.sessions",
         "django.contrib.messages",
         "django.contrib.staticfiles",
-    ]
-    + THIRD_PARTY_APPS
-    + LOCAL_APPS
+    ] + THIRD_PARTY_APPS + LOCAL_APPS
 )
 
 MIDDLEWARE = [
@@ -279,3 +277,4 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ") or ["*"]
+CSRF_TRUSTED_ORIGINS = ["http://localhost:8000"]
