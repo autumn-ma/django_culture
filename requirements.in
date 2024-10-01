@@ -10,3 +10,9 @@ pytest-django
 whitenoise
 djoser
 psycopg2-binary
+django-log-request-id
+django-celery-beat 
+django-celery-results
+python-decouple
+redis
+flower

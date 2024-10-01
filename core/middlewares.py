@@ -1,5 +1,3 @@
-import datetime
-from django.middleware.gzip import GZipMiddleware
 import logging
 import uuid
 
@@ -11,15 +9,15 @@ class RequestResponseLoggerMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        # Generate a unique request ID
-        request_id = str(uuid.uuid4())
-
-        # Attach the request ID to the request object for future access
-        request.request_id = request_id
-
         # Log the incoming request with the request ID
+        try:
+            body = request.body.decode("utf-8")
+        except AttributeError:
+            body = "No body"
+        logger.info(f"Incoming Request: {request.method} {request.path} {body}")
+
         logger.info(
-            f"[Request ID: {request_id}] Incoming Request: {request.method} {request.path}"
+            f"Incoming Request: {request.method} {request.path} {body}"
         )
 
         # Get the response from the next middleware or view
@@ -27,7 +25,7 @@ class RequestResponseLoggerMiddleware:
 
         # Log the outgoing response with the request ID
         logger.info(
-            f"[Request ID: {request_id}] Outgoing Response: {response.status_code}"
+            f"Outgoing Response: {response.status_code} {response.body}"
         )
 
         return response
