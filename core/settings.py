@@ -21,6 +21,8 @@ THIRD_PARTY_APPS = [
     "drf_spectacular",
     "djoser",
     "corsheaders",
+    'django_celery_beat',
+    'django_celery_results',
 ]
 
 LOCAL_APPS = [
@@ -39,6 +41,7 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE = [
+    'log_request_id.middleware.RequestIDMiddleware',
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
@@ -189,9 +192,15 @@ LOGGING_CONFIG = None  # This empties out Django's logging config
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": True,
+    'filters': {
+        'request_id': {
+            '()': 'log_request_id.filters.RequestIDFilter'
+        }
+    },
     "formatters": {
         "simple": {
-            "format": "%(levelname)s %(message)s",
+            "format": '%(request_id)s - %(asctime)s - %(filename)s - %(module)s - %(funcName)s - %(lineno)d - '
+                      '[%(levelname)s] - %(message)s',
             "datefmt": "%y %b %d, %H:%M:%S",
         },
     },
@@ -240,22 +249,22 @@ EMAIL_HOST_USER = "your-email"
 EMAIL_HOST_PASSWORD = "your-password"
 
 # ---------------------------------------------REDIS SETTINGS------------------------------------------------------
-REDIS_HOST = "redis_server"
+REDIS_HOST = "redis"
 REDIS_PORT = 6379
 REDIS_DB = 0
-REDIS_PASSWORD = "redis-password"
+REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", "")
+
+print("redis_password", REDIS_PASSWORD)
 
 # ---------------------------------------------CELERY SETTINGS------------------------------------------------------
 encoded_password = urllib.parse.quote_plus(REDIS_PASSWORD)
 CELERY_BROKER_URL = f"redis://:{encoded_password}@{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
-CELERY_RESULT_BACKEND = (
-    f"redis://:{encoded_password}@{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
-)
 CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = "Asia/Kathmandu"
-
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers.DatabaseScheduler'
 
 # ------------------------------DJOSER CONFIG---------------------------------------------#
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

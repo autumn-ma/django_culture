@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   web:
     build:
@@ -30,6 +28,44 @@ services:
       - 8000:80
     depends_on:
       - web
+  redis:
+    image: redis
+    command: redis-server --requirepass random_password
+    ports:
+      - 6379
+
+  celery:
+    build:
+      context: ../django_culture
+      dockerfile: ./Dockerfile.prod
+    command: celery -A core worker -l INFO
+    volumes:
+      - static_volume:/home/app/web/static
+      - media_volume:/home/app/web/media
+    env_file:
+      - ./.env.prod
+    depends_on:
+      - web
+      - db
+
+  flower:
+    build:
+      context: ../django_culture
+      dockerfile: ./Dockerfile.prod
+    command: celery -A core flower --broker=redis://random_password@redis:6379/0
+    volumes:
+      - static_volume:/home/app/web/static
+      - media_volume:/home/app/web/media
+    env_file:
+      - ./.env.prod
+    ports:
+      - 5555:5555
+    depends_on:
+      - web
+      - celery
+      - db
+      - redis
+
 
 volumes:
   postgres_data:

@@ -1,0 +1,46 @@
+# Ignore git and version control files
+.git
+.gitignore
+.gitmodules
+
+# Ignore cache and temporary files
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.cache
+*.log
+*.tmp
+
+# Ignore other files and folders that are not needed in the Docker image
+Dockerfile*
+Dockerfile
+.dockerignore
+docker-compose*
+*.md
+README.md
+LICENSE
+
+# Ignore any Python virtual environment folders
+venv/
+*.venv
+.env
+
+# Ignore some other files
+run_with_env.sh
+Jenkinsfile
+supervisor/
+supervisor.conf
+.vscode
+libmysqlclient.18.dylib
+ssm-upload.sh
+logs
+task-definitions
+docs
+bin
+logs
+tests
+env/
+gunicorn.conf.py
+# keep docker.env for local development
+!env/docker.env
