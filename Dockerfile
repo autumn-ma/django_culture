@@ -1,28 +1,37 @@
-# pull official base image
-FROM python:3.11.4-slim-buster
+# Install uv
+FROM python:3.12-slim
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-# set work directory
-WORKDIR /code
+# libraqm0 for captcha
+RUN apt-get update \
+ && apt-get -y install libpq-dev gcc libraqm0
 
-# set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+# Install the project into /app
+WORKDIR /app
 
-# install system dependencies
-RUN apt-get update && apt-get install -y netcat
+# Enable bytecode compilation
+ENV UV_COMPILE_BYTECODE=1
+# Copy from the cache instead of linking since it's a mounted volume
+ENV UV_LINK_MODE=copy
 
-# install dependencies
-RUN pip install --upgrade pip
-COPY ./requirements.txt .
-RUN pip install -r requirements.txt
+# Convert lockfile to requirements.txt and install dependencies
+RUN --mount=type=cache,target=/root/.cache/uv \
+ --mount=type=bind,source=uv.lock,target=uv.lock \
+ --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+ uv export --format requirements-txt --no-dev > requirements.txt && \
+ uv pip install --system -r requirements.txt
 
-# copy entrypoint.sh
-COPY ./entrypoint.sh .
-RUN sed -i 's/\r$//g' /code/entrypoint.sh
-RUN chmod +x /code/entrypoint.sh
-
-# copy project
+# Copy source code
 COPY . .
 
-# run entrypoint.sh
-ENTRYPOINT ["/code/entrypoint.sh"]
+
+RUN mkdir -p /var/log/legal_ai
+
+# Copy entrypoint script
+COPY entrypoint.sh /app/entrypoint.sh
+
+# Fix line endings and make it executable
+RUN sed -i 's/\r$//g' /app/entrypoint.sh && \
+ chmod +x /app/entrypoint.sh
+
+ENTRYPOINT ["/app/entrypoint.sh"]

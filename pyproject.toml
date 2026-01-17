@@ -1,0 +1,102 @@
+[project]
+name = "culture"
+version = "0.1.0"
+description = "Django culture project"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "django>=5.1",
+    "django-celery-beat>=2.7.0",
+    "django-celery-results>=2.5.1",
+    "django-cors-headers>=4.7.0",
+    "django-redis>=5.4.0",
+    "django-lifecycle>=1.2.4",
+    "django-pghistory>=3.2.0",
+    "django-extensions>=3.2.3",
+    "djangorestframework>=3.15.2",
+    "django-admin-interface>=0.28.8",
+    "django-pgtrigger>=4.12.2",
+    "drf-spectacular>=0.28.0",
+    "drf-writable-nested>=0.7.1",
+    "gunicorn>=23.0.0",
+    "psycopg2-binary>=2.9.10",
+    "python-dotenv>=1.0.1",
+    "redis>=5.2.1",
+    "sentry-sdk[django]>=2.22.0",
+    "whitenoise>=6.9.0",
+    "iubeo>=0.2.1",
+    "memoization>=0.4.0",
+    "pyuwsgi>=2.0.26",
+    "mjml-python>=1.3.4",
+    "ipython>=8.26.0",
+    "django-filter>=2.4.0",
+    "django-allauth[headless,socialaccount]>=65.2.0",
+    "robohash==2.0a1", #remove when not required
+    "django-admin-autocomplete-filter>=0.7.1",
+    "django-object-actions>=5.0.0",
+    "django-more-admin-filters>=1.12",
+    "django-storages>=1.14.6",
+    "uvicorn",
+    "uvicorn-worker",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.11.7",
+]
+
+
+[tool.ruff]
+# Inherit the same globs you had in 'exclude'
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+    "migrations",
+]
+line-length = 80
+indent-width = 4
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["F", "E", "B", "W", "INP", "T20", "C4", "TID", "SIM", "A", "N", "UP", "DJ", "PIE", "I"]
+ignore = ["F403", "E501", "F401", "A003", "DJ006", "SIM115", "DJ001"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.ruff.lint.isort]
+order-by-type = true
+relative-imports-order = "closest-to-furthest"
+combine-as-imports = true
+known-first-party = ["backend", "core", "rest"]
+known-third-party = ["openai", "rest_framework"]
+section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
+lines-between-types = 1
+from-first = true
